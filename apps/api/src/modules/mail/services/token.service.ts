@@ -17,6 +17,10 @@ export class TokenService {
     
     return { token, hashedToken, expiresAt };
   }
+
+  hash(token: string) {
+    return hashToken(token);
+  }
 }
 
 export const tokenService = new TokenService();
