@@ -1,5 +1,4 @@
 import { prisma } from "../../lib/prisma";
-import { UserRole } from "@prisma/client";
 
 export class AuthRepository {
   async findUserByEmail(email: string) {
@@ -10,7 +9,7 @@ export class AuthRepository {
     return prisma.user.create({
       data: {
         ...data,
-        role: UserRole.USER,
+        role: "USER",
       },
     });
   }

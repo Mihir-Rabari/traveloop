@@ -5,7 +5,7 @@ import { asyncHandler } from "../../utils/async-handler";
 
 export class NotesController {
   getNotes = asyncHandler(async (req: Request, res: Response) => {
-    const { tripId } = req.params;
+    const tripId = req.params.tripId as string;
     const userId = req.user?.userId;
     const notes = await notesService.getTripNotes(tripId, userId || "");
     return sendResponse(res, 200, "Notes retrieved successfully", notes);
@@ -18,14 +18,14 @@ export class NotesController {
   });
 
   updateNote = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     const note = await notesService.updateNote(id, userId, req.body);
     return sendResponse(res, 200, "Note updated successfully", note);
   });
 
   deleteNote = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await notesService.deleteNote(id, userId);
     return sendResponse(res, 200, "Note deleted successfully");

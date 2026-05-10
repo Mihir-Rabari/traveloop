@@ -5,7 +5,7 @@ import { asyncHandler } from "../../utils/async-handler";
 
 export class PackingController {
   getChecklists = asyncHandler(async (req: Request, res: Response) => {
-    const { tripId } = req.params;
+    const tripId = req.params.tripId as string;
     const userId = req.user?.userId;
     const checklists = await packingService.getTripChecklists(tripId, userId || "");
     return sendResponse(res, 200, "Checklists retrieved successfully", checklists);

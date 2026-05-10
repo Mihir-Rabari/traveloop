@@ -10,7 +10,7 @@ export class BudgetsService {
 
     const budget = await budgetsRepository.findByTripId(tripId);
     const expenses = await budgetsRepository.getExpenses(tripId);
-    const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const totalExpenses = expenses.reduce((sum: number, exp: { amount: number }) => sum + exp.amount, 0);
 
     return {
       budget,

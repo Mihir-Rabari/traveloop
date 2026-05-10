@@ -1,4 +1,11 @@
-import { User, UserRole } from "@prisma/client";
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  role: UserRole;
+}
+
+export type UserRole = "USER" | "ADMIN";
 
 export interface AuthUser extends Omit<User, "password"> {}
 

@@ -5,14 +5,14 @@ import { asyncHandler } from "../../utils/async-handler";
 
 export class BudgetsController {
   getBudget = asyncHandler(async (req: Request, res: Response) => {
-    const { tripId } = req.params;
+    const tripId = req.params.tripId as string;
     const userId = req.user?.userId;
     const result = await budgetsService.getTripBudget(tripId, userId || "");
     return sendResponse(res, 200, "Budget retrieved successfully", result);
   });
 
   updateBudget = asyncHandler(async (req: Request, res: Response) => {
-    const { tripId } = req.params;
+    const tripId = req.params.tripId as string;
     const userId = req.user!.userId;
     const budget = await budgetsService.updateBudget(tripId, userId, req.body);
     return sendResponse(res, 200, "Budget updated successfully", budget);
@@ -25,7 +25,7 @@ export class BudgetsController {
   });
 
   deleteExpense = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await budgetsService.deleteExpense(id, userId);
     return sendResponse(res, 200, "Expense deleted successfully");

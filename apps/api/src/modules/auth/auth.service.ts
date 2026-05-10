@@ -4,6 +4,7 @@ import { authRepository } from "./auth.repository";
 import { mailService } from "../mail/services/mail.service";
 import { otpService } from "../mail/services/otp.service";
 import { tokenService } from "../mail/services/token.service";
+import { UserRole } from "../auth/auth.types";
 import { prisma } from "../../lib/prisma";
 import { AppError, UnauthorizedError, BadRequestError, ConflictError } from "../../utils/errors";
 
@@ -20,7 +21,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const { otp, hashedOtp, expiresAt } = otpService.generate();
 
-    const user = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       const newUser = await tx.user.create({
         data: {
           ...data,
