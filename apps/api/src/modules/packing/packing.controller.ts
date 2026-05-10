@@ -6,7 +6,8 @@ import { asyncHandler } from "../../utils/async-handler";
 export class PackingController {
   getChecklists = asyncHandler(async (req: Request, res: Response) => {
     const { tripId } = req.params;
-    const checklists = await packingService.getTripChecklists(tripId);
+    const userId = req.user?.userId;
+    const checklists = await packingService.getTripChecklists(tripId, userId || "");
     return sendResponse(res, 200, "Checklists retrieved successfully", checklists);
   });
 
@@ -17,7 +18,7 @@ export class PackingController {
   });
 
   deleteChecklist = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await packingService.deleteChecklist(id, userId);
     return sendResponse(res, 200, "Checklist deleted successfully");
@@ -30,14 +31,14 @@ export class PackingController {
   });
 
   updateItem = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     const item = await packingService.updateItem(id, userId, req.body);
     return sendResponse(res, 200, "Item updated successfully", item);
   });
 
   deleteItem = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await packingService.deleteItem(id, userId);
     return sendResponse(res, 200, "Item deleted successfully");

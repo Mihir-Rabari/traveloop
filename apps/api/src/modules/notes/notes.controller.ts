@@ -6,7 +6,8 @@ import { asyncHandler } from "../../utils/async-handler";
 export class NotesController {
   getNotes = asyncHandler(async (req: Request, res: Response) => {
     const { tripId } = req.params;
-    const notes = await notesService.getTripNotes(tripId);
+    const userId = req.user?.userId;
+    const notes = await notesService.getTripNotes(tripId, userId || "");
     return sendResponse(res, 200, "Notes retrieved successfully", notes);
   });
 

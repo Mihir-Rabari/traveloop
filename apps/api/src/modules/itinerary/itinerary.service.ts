@@ -1,10 +1,14 @@
 import { itineraryRepository } from "./itinerary.repository";
 import { ForbiddenError, NotFoundError } from "../../utils/errors";
+import { prisma } from "../../lib/prisma";
 
 export class ItineraryService {
   // Stops
   async addStop(userId: string, data: any) {
-    // Verify trip ownership or access could be added here
+    const trip = await prisma.trip.findUnique({ where: { id: data.tripId } });
+    if (!trip) throw new NotFoundError("Trip not found");
+    if (trip.userId !== userId) throw new ForbiddenError();
+
     return itineraryRepository.createStop({
       ...data,
       date: data.date ? new Date(data.date) : null,
@@ -31,12 +35,19 @@ export class ItineraryService {
   }
 
   async reorderStops(tripId: string, userId: string, stopIds: string[]) {
-    // Add ownership check for tripId
+    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+    if (!trip) throw new NotFoundError("Trip not found");
+    if (trip.userId !== userId) throw new ForbiddenError();
+
     return itineraryRepository.reorderStops(tripId, stopIds);
   }
 
   // Activities
   async addActivity(userId: string, data: any) {
+    const stop = await itineraryRepository.findStopById(data.stopId);
+    if (!stop) throw new NotFoundError("Stop not found");
+    if (stop.trip.userId !== userId) throw new ForbiddenError();
+
     return itineraryRepository.createActivity({
       ...data,
       startTime: data.startTime ? new Date(data.startTime) : null,

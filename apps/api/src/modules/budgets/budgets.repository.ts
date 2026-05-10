@@ -34,6 +34,13 @@ export class BudgetsRepository {
     return prisma.expense.delete({ where: { id } });
   }
 
+  async findExpenseById(id: string) {
+    return prisma.expense.findUnique({
+      where: { id },
+      include: { trip: true },
+    });
+  }
+
   async getExpenseCategories() {
     return prisma.expenseCategory.findMany();
   }

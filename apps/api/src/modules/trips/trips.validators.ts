@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { Visibility } from "@prisma/client";
+
+const Visibility = ["PUBLIC", "PRIVATE"] as const;
 
 export const createTripSchema = z.object({
   body: z.object({
@@ -7,7 +8,7 @@ export const createTripSchema = z.object({
     description: z.string().optional(),
     startDate: z.string().datetime(),
     endDate: z.string().datetime(),
-    visibility: z.nativeEnum(Visibility).optional(),
+    visibility: z.enum(Visibility).optional(),
     coverImage: z.string().url().optional(),
   }),
 });
@@ -18,7 +19,7 @@ export const updateTripSchema = z.object({
     description: z.string().optional(),
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
-    visibility: z.nativeEnum(Visibility).optional(),
+    visibility: z.enum(Visibility).optional(),
     coverImage: z.string().url().optional(),
   }),
 });

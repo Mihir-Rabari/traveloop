@@ -12,7 +12,7 @@ export class PublicSharingController {
   });
 
   getSharedTrip = asyncHandler(async (req: Request, res: Response) => {
-    const { token } = req.params;
+    const token = req.params.token as string;
     const share = await publicSharingRepository.findByToken(token);
     if (!share) throw new NotFoundError("Shared trip not found or expired");
     return sendResponse(res, 200, "Shared trip retrieved", share.trip);

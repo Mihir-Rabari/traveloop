@@ -12,14 +12,14 @@ export class ItineraryController {
   });
 
   updateStop = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     const stop = await itineraryService.updateStop(id, userId, req.body);
     return sendResponse(res, 200, "Stop updated successfully", stop);
   });
 
   deleteStop = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await itineraryService.deleteStop(id, userId);
     return sendResponse(res, 200, "Stop deleted successfully");
@@ -40,14 +40,14 @@ export class ItineraryController {
   });
 
   updateActivity = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     const activity = await itineraryService.updateActivity(id, userId, req.body);
     return sendResponse(res, 200, "Activity updated successfully", activity);
   });
 
   deleteActivity = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await itineraryService.deleteActivity(id, userId);
     return sendResponse(res, 200, "Activity deleted successfully");
