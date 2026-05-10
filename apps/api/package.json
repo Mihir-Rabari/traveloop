@@ -35,8 +35,10 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.13.10",
     "@types/nodemailer": "^8.0.0",
+    "@types/react": "^19.2.14",
     "nodemon": "^3.1.9",
     "prisma": "^6.4.1",
+    "react": "^19.2.6",
     "react-email": "^6.1.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"

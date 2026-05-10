@@ -4,6 +4,7 @@ import { authRepository } from "./auth.repository";
 import { mailService } from "../mail/services/mail.service";
 import { otpService } from "../mail/services/otp.service";
 import { tokenService } from "../mail/services/token.service";
+import { prisma } from "../../lib/prisma";
 import { AppError, UnauthorizedError, BadRequestError, ConflictError } from "../../utils/errors";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-key";
@@ -120,16 +121,16 @@ export class AuthService {
   private generateAccessToken(user: any) {
     return jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "15m" }
+      JWT_SECRET as string,
+      { expiresIn: (process.env.JWT_EXPIRES_IN as any) || "15m" }
     );
   }
 
   private generateRefreshToken(user: any) {
     return jwt.sign(
       { userId: user.id },
-      JWT_REFRESH_SECRET,
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d" }
+      JWT_REFRESH_SECRET as string,
+      { expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN as any) || "7d" }
     );
   }
 }
