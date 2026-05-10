@@ -21,12 +21,14 @@ export class MailService {
     }
   }
 
-  async send(options: MailOptions): Promise<void> {
+  async send(options: MailOptions): Promise<boolean> {
     try {
       await this.provider.sendMail(options);
+      return true;
     } catch (error) {
       console.error("Failed to send email:", error);
-      throw new Error("Email delivery failed");
+      // We don't throw here to prevent API crashes if mail provider is down
+      return false;
     }
   }
 

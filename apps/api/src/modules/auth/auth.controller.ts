@@ -8,6 +8,12 @@ export class AuthController {
     const result = await authService.register(req.body);
     return sendResponse(res, 201, "User registered. Please verify your email.", result);
   });
+ 
+  resendOtp = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    await authService.resendOtp(email);
+    return sendResponse(res, 200, "OTP resent successfully");
+  });
 
   verifyEmail = asyncHandler(async (req: Request, res: Response) => {
     const { email, otp } = req.body;

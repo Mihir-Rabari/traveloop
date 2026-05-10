@@ -50,13 +50,13 @@ export class PublicSharingRepository {
         endDate: originalTrip.endDate,
         userId: newUserId,
         stops: {
-          create: originalTrip.stops.map((stop) => ({
+          create: originalTrip.stops.map((stop: any) => ({
             location: stop.location,
             order: stop.order,
             date: stop.date,
             notes: stop.notes,
             activities: {
-              create: stop.activities.map((act) => ({
+              create: stop.activities.map((act: any) => ({
                 title: act.title,
                 description: act.description,
                 startTime: act.startTime,

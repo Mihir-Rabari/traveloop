@@ -18,17 +18,37 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const user = await authRepository.createUser({
-      ...data,
-      password: hashedPassword,
-    });
-
     const { otp, hashedOtp, expiresAt } = otpService.generate();
-    await authRepository.upsertVerificationToken(user.id, hashedOtp, expiresAt);
+
+    const user = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          ...data,
+          password: hashedPassword,
+        },
+      });
+
+      await tx.emailVerificationToken.upsert({
+        where: { token: hashedOtp }, // Token is unique, so we can use it as key, but usually we want to upsert by userId
+        update: { token: hashedOtp, expiresAt, verifiedAt: null },
+        create: { userId: newUser.id, token: hashedOtp, expiresAt },
+      });
+
+      return newUser;
+    });
 
     await mailService.sendVerificationEmail(user.email, otp);
 
     return { userId: user.id, email: user.email };
+  }
+
+  async resendOtp(email: string) {
+    const user = await authRepository.findUserByEmail(email);
+    if (!user) throw new BadRequestError("User not found");
+
+    const { otp, hashedOtp, expiresAt } = otpService.generate();
+    await authRepository.upsertVerificationToken(user.id, hashedOtp, expiresAt);
+    await mailService.sendVerificationEmail(user.email, otp);
   }
 
   async verifyEmail(email: string, otp: string) {

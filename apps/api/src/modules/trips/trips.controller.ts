@@ -11,7 +11,7 @@ export class TripsController {
   });
 
   getTrip = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user?.userId; // Optional userId for public trips
     const trip = await tripsService.getTripDetails(id, userId || "");
     return sendResponse(res, 200, "Trip details retrieved successfully", trip);
@@ -24,14 +24,14 @@ export class TripsController {
   });
 
   updateTrip = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     const trip = await tripsService.updateTrip(id, userId, req.body);
     return sendResponse(res, 200, "Trip updated successfully", trip);
   });
 
   deleteTrip = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.userId;
     await tripsService.deleteTrip(id, userId);
     return sendResponse(res, 200, "Trip deleted successfully");

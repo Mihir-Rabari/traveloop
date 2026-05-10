@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import { rateLimit } from "express-rate-limit";
 
 import authRoutes from "./modules/auth/auth.routes";
 import tripsRoutes from "./modules/trips/trips.routes";
@@ -20,9 +21,28 @@ dotenv.config({ path: "../../.env" });
 
 const app = express();
 
+// Rate Limiting
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window`
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { success: false, message: "Too many requests, please try again later." },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 10, // Limit each IP to 10 login/register requests per `window`
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { success: false, message: "Too many authentication attempts, please try again later." },
+});
+
 // Middlewares
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(generalLimiter);
+app.use("/api/auth", authLimiter);
 app.use(cors({
   origin: process.env.CORS_ORIGIN || "http://localhost:3000",
   credentials: true
