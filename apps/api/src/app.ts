@@ -9,6 +9,11 @@ import authRoutes from "./modules/auth/auth.routes";
 import tripsRoutes from "./modules/trips/trips.routes";
 import itineraryRoutes from "./modules/itinerary/itinerary.routes";
 import citiesRoutes from "./modules/cities/cities.routes";
+import budgetsRoutes from "./modules/budgets/budgets.routes";
+import packingRoutes from "./modules/packing/packing.routes";
+import notesRoutes from "./modules/notes/notes.routes";
+import publicSharingRoutes from "./modules/public-sharing/public-sharing.routes";
+import adminRoutes from "./modules/admin/admin.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
 
 dotenv.config({ path: "../../.env" });
@@ -31,6 +36,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripsRoutes);
 app.use("/api/itinerary", itineraryRoutes);
 app.use("/api/cities", citiesRoutes);
+app.use("/api/budgets", budgetsRoutes);
+app.use("/api/packing", packingRoutes);
+app.use("/api/notes", notesRoutes);
+app.use("/api/share", publicSharingRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health Check
 app.get("/health", (req, res) => {
