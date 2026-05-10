@@ -8,9 +8,7 @@ interface ButtonProps {
 
 export const Button = ({ href, children }: ButtonProps) => (
   <REButton
-    pX={20}
-    pY={12}
-    style={button}
+    style={{ ...button, padding: "12px 20px" }}
     href={href}
   >
     {children}
