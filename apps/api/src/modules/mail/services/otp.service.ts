@@ -14,6 +14,10 @@ export class OTPService {
     if (new Date() > expiresAt) return false;
     return hashToken(otp) === hashedOtp;
   }
+
+  hash(otp: string) {
+    return hashToken(otp);
+  }
 }
 
 export const otpService = new OTPService();

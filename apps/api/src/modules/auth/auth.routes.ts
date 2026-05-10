@@ -1,42 +1,23 @@
 import { Router } from "express";
+import { authController } from "./auth.controller";
+import { validate } from "../../middlewares/validate.middleware";
+import {
+  registerSchema,
+  loginSchema,
+  verifyEmailSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from "./auth.validators";
 
 const router = Router();
 
-router.post("/register", (req, res) => {
-  res.status(201).json({ message: "User registered successfully" });
-});
-
-router.post("/login", (req, res) => {
-  res.status(200).json({ message: "Login successful" });
-});
-
-router.post("/logout", (req, res) => {
-  res.status(200).json({ message: "Logout successful" });
-});
-
-router.post("/refresh", (req, res) => {
-  res.status(200).json({ message: "Token refreshed" });
-});
-
-// Auth Email Routes
-router.post("/send-verification", (req, res) => {
-  res.status(202).json({ message: "Verification email queued" });
-});
-
-router.post("/verify-email", (req, res) => {
-  res.status(200).json({ message: "Email verified successfully" });
-});
-
-router.post("/resend-otp", (req, res) => {
-  res.status(202).json({ message: "New OTP sent" });
-});
-
-router.post("/forgot-password", (req, res) => {
-  res.status(202).json({ message: "Password reset email queued" });
-});
-
-router.post("/reset-password", (req, res) => {
-  res.status(200).json({ message: "Password reset successfully" });
-});
+router.post("/register", validate(registerSchema), authController.register);
+router.post("/login", validate(loginSchema), authController.login);
+router.post("/resend-otp", authController.resendOtp);
+router.post("/verify-email", validate(verifyEmailSchema), authController.verifyEmail);
+router.post("/refresh", authController.refresh);
+router.post("/logout", authController.logout);
+router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
+router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
 
 export default router;
