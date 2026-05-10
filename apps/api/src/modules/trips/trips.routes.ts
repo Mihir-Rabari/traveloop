@@ -17,5 +17,6 @@ router.get("/:id", tripsController.getTrip);
 router.post("/", validate(createTripSchema), tripsController.createTrip);
 router.patch("/:id", validate(updateTripSchema), tripsController.updateTrip);
 router.delete("/:id", tripsController.deleteTrip);
+router.post("/:id/share", tripsController.shareTrip);
 
 export default router;

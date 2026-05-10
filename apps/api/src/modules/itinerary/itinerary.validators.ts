@@ -2,7 +2,10 @@ import { z } from "zod";
 
 export const createStopSchema = z.object({
   body: z.object({
-    tripId: z.string().cuid(),
+    tripId: z.string(),
+    title: z.string().min(1).default("New Activity"),
+    description: z.string().optional(),
+    type: z.string().default("ACTIVITY"),
     location: z.string().min(1),
     order: z.number().int(),
     date: z.string().datetime().optional(),
@@ -12,6 +15,9 @@ export const createStopSchema = z.object({
 
 export const updateStopSchema = z.object({
   body: z.object({
+    title: z.string().min(1).optional(),
+    description: z.string().optional(),
+    type: z.string().optional(),
     location: z.string().min(1).optional(),
     order: z.number().int().optional(),
     date: z.string().datetime().optional(),
@@ -21,7 +27,7 @@ export const updateStopSchema = z.object({
 
 export const createActivitySchema = z.object({
   body: z.object({
-    stopId: z.string().cuid(),
+    stopId: z.string(),
     title: z.string().min(1),
     description: z.string().optional(),
     startTime: z.string().datetime().optional(),

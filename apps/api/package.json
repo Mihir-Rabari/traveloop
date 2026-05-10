@@ -6,10 +6,14 @@
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "tsx src/server.ts",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "tsx ../../prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx ../../prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",

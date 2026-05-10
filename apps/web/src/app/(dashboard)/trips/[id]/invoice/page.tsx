@@ -1,140 +1,233 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { 
+  Receipt, CreditCard, DollarSign, ArrowUpRight, TrendingDown, 
+  MapPin, Download, Bed, Plane, AlertCircle, FileText, CheckCircle2,
+  Users, Calendar, Loader2
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, Download, FileText, CheckCircle2 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useBudgets } from "@/api/hooks/use-budgets";
 
 export default function ExpenseInvoicePage() {
+  const params = useParams();
+  const tripId = params.id as string;
+  const { useBudgetQuery } = useBudgets(tripId);
+  const { data: budgetResponse, isLoading } = useBudgetQuery();
+
+  const budgetData = (budgetResponse as any)?.data || {};
+  const expenses = budgetData.expenses || [];
+  const total = budgetData.totalExpenses || 0;
+  const budget = budgetData.budget?.amount || 0;
+  const remaining = budgetData.remaining || 0;
+
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center gap-6 text-center">
+        <Loader2 className="h-16 w-16 text-primary animate-spin" />
+        <p className="text-2xl font-black text-primary">Calculating your adventure costs...</p>
+      </div>
+    );
+  }
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="flex items-center justify-between border-b pb-4">
-        <div>
-          <a href="/trips" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2 transition-colors">
-            <ArrowLeft className="mr-1 h-3 w-3" />
-            back to My Trips
-          </a>
-          <h1 className="text-2xl font-bold tracking-tight">Expense Invoice / billing</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search Invoices..." className="pl-9 h-9 w-48" />
+    <div className="max-w-6xl mx-auto space-y-12 pb-20">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 px-4">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 text-primary mb-2">
+            <Receipt className="h-8 w-8" />
+            <span className="text-xs font-black uppercase tracking-[0.3em]">Billing & Invoices</span>
           </div>
-          <Button variant="outline" size="sm" className="h-9">Filter</Button>
-          <Button variant="outline" size="sm" className="h-9">Sort #</Button>
+          <h1 className="text-5xl font-black tracking-tighter text-foreground">Expense Invoice</h1>
+          <p className="text-lg text-muted-foreground font-medium">Detailed breakdown of your adventure spending.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+             <Button variant="outline" className="rounded-full h-14 px-8 font-black border-2 border-primary/10">
+              Filter
+            </Button>
+          </div>
+          <Button variant="outline" className="rounded-full h-14 px-8 font-black border-2 border-primary/10">
+            Sort #
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row justify-between border-b pb-6 mb-6">
-              <div className="flex gap-4 items-center">
-                <div className="h-20 w-20 bg-muted/50 rounded-lg flex items-center justify-center shrink-0">
-                  {/* Logo Placeholder */}
-                  <div className="w-10 h-10 border-4 border-primary rounded-sm opacity-50" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 px-4">
+        {/* Main Invoice Card */}
+        <div className="lg:col-span-2 space-y-10">
+          <Card className="rounded-[3.5rem] border-4 border-primary/10 bg-card/40 backdrop-blur-xl shadow-2xl overflow-hidden group">
+            <CardContent className="p-10 space-y-12">
+              {/* Invoice Header Details */}
+              <div className="flex flex-col md:flex-row justify-between items-start border-b border-primary/5 pb-10 gap-10">
+                <div className="flex gap-8 items-start">
+                  <div className="h-32 w-32 bg-primary/10 rounded-[2rem] flex items-center justify-center border-2 border-primary/5 shadow-inner">
+                    <MapPin className="h-14 w-14 text-primary" />
+                  </div>
+                  <div className="space-y-3">
+                    <h2 className="text-3xl font-black tracking-tight text-foreground">Trip to Europe Adventure</h2>
+                    <div className="flex flex-col gap-1 text-sm font-bold text-muted-foreground">
+                       <span>Aug 05 - Aug 25, 2025 • 21 days</span>
+                       <span>Created by Divyang</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="font-semibold text-lg">Trip to Europe Adventure</h2>
-                  <p className="text-xs text-muted-foreground">Aug 05 - Aug 25, 2025 • 4 cities</p>
-                  <p className="text-xs text-muted-foreground">created by divyang</p>
-                </div>
-              </div>
-              <div className="mt-4 md:mt-0 text-right md:text-left md:pl-6 md:border-l space-y-1 text-sm">
-                <p><span className="text-muted-foreground">Invoice ID:</span> INV-SYS-85240</p>
-                <p><span className="text-muted-foreground">Generated date:</span> May 20, 2025</p>
-                <p><span className="text-muted-foreground">Payment status:</span> <span className="text-yellow-600 font-medium">Pending</span></p>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="font-medium mb-2 text-sm">Traveler Details:</h3>
-              <p className="text-sm text-muted-foreground">James, Arya, Jerry, Cristina</p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-muted-foreground uppercase bg-muted/50 border-b">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">#</th>
-                    <th className="px-4 py-3 font-medium">Category</th>
-                    <th className="px-4 py-3 font-medium">Description</th>
-                    <th className="px-4 py-3 font-medium text-center">Qty/details</th>
-                    <th className="px-4 py-3 font-medium text-right">Unit Cost</th>
-                    <th className="px-4 py-3 font-medium text-right">Amount</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y border-b">
-                  <tr className="hover:bg-muted/20">
-                    <td className="px-4 py-4">1</td>
-                    <td className="px-4 py-4 font-medium">hotel</td>
-                    <td className="px-4 py-4">hotel booking paris</td>
-                    <td className="px-4 py-4 text-center">3 nights</td>
-                    <td className="px-4 py-4 text-right">2000</td>
-                    <td className="px-4 py-4 text-right">6000</td>
-                  </tr>
-                  <tr className="hover:bg-muted/20">
-                    <td className="px-4 py-4">2</td>
-                    <td className="px-4 py-4 font-medium">travel</td>
-                    <td className="px-4 py-4">Flight bookings (DEL -{'>'} PAR)</td>
-                    <td className="px-4 py-4 text-center">4</td>
-                    <td className="px-4 py-4 text-right">12000</td>
-                    <td className="px-4 py-4 text-right">48000</td>
-                  </tr>
-                  {/* Empty rows to match mockup */}
-                  <tr className="h-12"><td colSpan={6}></td></tr>
-                  <tr className="h-12"><td colSpan={6}></td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <div className="w-64 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">$54000</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tax (5%)</span>
-                  <span className="font-medium">$2700</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="text-muted-foreground">Discount</span>
-                  <span className="font-medium text-green-600">-$0</span>
-                </div>
-                <div className="flex justify-between pt-2">
-                  <span className="font-bold text-base">Grand Total</span>
-                  <span className="font-bold text-base">$56700</span>
+                
+                <div className="grid grid-cols-2 gap-8 text-sm">
+                  <div className="space-y-1">
+                    <p className="font-black text-primary uppercase tracking-widest text-[10px]">Invoice ID</p>
+                    <p className="font-bold text-foreground">INV-SYS-85240</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-primary uppercase tracking-widest text-[10px]">Generated Date</p>
+                    <p className="font-bold text-foreground">May 20, 2025</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-primary uppercase tracking-widest text-[10px]">Traveler Details</p>
+                    <p className="font-bold text-foreground leading-tight">James, Arjun, Jerry, Kristina</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-primary uppercase tracking-widest text-[10px]">Payment Status</p>
+                    <div className="inline-flex items-center gap-2 bg-yellow-500/10 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-yellow-500/10">
+                      Pending
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Download Invoice</Button>
-              <Button variant="outline"><FileText className="mr-2 h-4 w-4" /> Export as PDF</Button>
-              <Button className="ml-auto"><CheckCircle2 className="mr-2 h-4 w-4" /> Mark as paid</Button>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Budget Insights Sidebar */}
-        <div className="space-y-6">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="font-bold mb-6">Budget Insights</h3>
-              <div className="flex items-center gap-6">
-                <div className="w-24 h-24 rounded-full border-[10px] border-muted relative flex items-center justify-center shrink-0">
-                   <div className="absolute inset-0 rounded-full border-[10px] border-primary border-t-transparent border-r-transparent rotate-45" />
-                </div>
-                <div className="space-y-2 text-sm">
-                  <p><span className="text-muted-foreground">Total Budget:</span> <span className="font-medium">20000</span></p>
-                  <p><span className="text-muted-foreground">Total spent:</span> <span className="font-medium">22000</span></p>
-                  <p><span className="text-muted-foreground">Remaining:</span> <span className="font-medium text-destructive">-2000</span></p>
+              {/* Expense Table */}
+              <div className="overflow-hidden rounded-[2.5rem] border-4 border-primary/5 bg-background/30 backdrop-blur-md">
+                <table className="w-full text-left">
+                  <thead className="bg-primary/5">
+                    <tr>
+                      <th className="px-6 py-5 text-[10px] font-black text-primary uppercase tracking-widest w-16">#</th>
+                      <th className="px-6 py-5 text-[10px] font-black text-primary uppercase tracking-widest">Category</th>
+                      <th className="px-6 py-5 text-[10px] font-black text-primary uppercase tracking-widest">Description</th>
+                      <th className="px-6 py-5 text-[10px] font-black text-primary uppercase tracking-widest text-center">Qty/Details</th>
+                      <th className="px-6 py-5 text-[10px] font-black text-primary uppercase tracking-widest text-right">Unit Cost</th>
+                      <th className="px-6 py-5 text-[10px] font-black text-primary uppercase tracking-widest text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-primary/5">
+                    {expenses.map((row: any, i: number) => {
+                      const Icon = row.category === 'Accommodation' ? Bed : row.category === 'Travel' ? Plane : DollarSign;
+                      return (
+                        <tr key={row.id} className="hover:bg-primary/5 transition-colors group/row">
+                          <td className="px-6 py-6 text-sm font-black text-muted-foreground">{i + 1}</td>
+                          <td className="px-6 py-6">
+                             <div className={`inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/5`}>
+                                <Icon size={12} />
+                                {row.category}
+                             </div>
+                          </td>
+                          <td className="px-6 py-6 font-bold text-foreground">{row.description}</td>
+                          <td className="px-6 py-6 text-center text-sm font-medium text-muted-foreground">1</td>
+                          <td className="px-6 py-6 text-right font-bold text-muted-foreground">${row.amount}</td>
+                          <td className="px-6 py-6 text-right font-black text-lg text-foreground">${row.amount}</td>
+                        </tr>
+                      );
+                    })}
+                    {/* Fill empty rows to match mockup style if less than 5 items */}
+                    {expenses.length < 5 && [1, 2, 3, 4, 5].slice(expenses.length).map(i => (
+                      <tr key={`empty-${i}`} className="h-20 opacity-20">
+                        <td colSpan={6} />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Totals Section */}
+              <div className="flex flex-col md:flex-row justify-end items-end pt-10 border-t border-primary/5 gap-8">
+                <div className="w-full md:w-80 space-y-4">
+                  <div className="flex justify-between items-center text-muted-foreground font-black text-sm uppercase tracking-widest">
+                    <span>Subtotal</span>
+                    <span className="text-foreground">$ {total}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-muted-foreground font-black text-sm uppercase tracking-widest">
+                    <span>Tax (0%)</span>
+                    <span className="text-foreground">$ 0</span>
+                  </div>
+                  <div className="flex justify-between items-center text-muted-foreground font-black text-sm uppercase tracking-widest">
+                    <span>Discount</span>
+                    <span className="text-foreground">$ 0</span>
+                  </div>
+                  <div className="h-1 w-full bg-primary/5 rounded-full" />
+                  <div className="flex justify-between items-center text-foreground font-black text-3xl tracking-tighter">
+                    <span>Grand Total</span>
+                    <span className="text-primary">$ {total}</span>
+                  </div>
                 </div>
               </div>
-              <Button variant="outline" className="w-full mt-6">View Full Budget</Button>
             </CardContent>
+          </Card>
+
+          {/* Action Footer */}
+          <div className="flex flex-wrap items-center justify-between gap-6 px-4">
+            <div className="flex gap-4">
+              <Button variant="outline" className="rounded-full h-14 px-10 font-black border-4 border-primary/10 shadow-xl text-lg">
+                Download Invoice
+              </Button>
+              <Button variant="outline" className="rounded-full h-14 px-10 font-black border-4 border-primary/10 shadow-xl text-lg">
+                Export as PDF
+              </Button>
+            </div>
+            <Button className="rounded-full h-14 px-12 font-black shadow-2xl text-lg bg-foreground text-background hover:bg-foreground/90">
+              Mark as paid
+            </Button>
+          </div>
+        </div>
+
+        {/* Sidebar Insights */}
+        <div className="space-y-10">
+          <Card className="rounded-[3rem] border-4 border-primary/10 bg-card/40 backdrop-blur-xl shadow-2xl p-10 space-y-10">
+            <h3 className="text-2xl font-black tracking-tight">Budget Insights</h3>
+            <div className="flex items-center justify-center relative">
+               <svg viewBox="0 0 100 100" className="w-48 h-48 drop-shadow-2xl">
+                 <circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" strokeWidth="15" className="text-primary/10" />
+                 <circle 
+                   cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" strokeWidth="15" 
+                   strokeDasharray="251.2" 
+                   strokeDashoffset={251.2 - (251.2 * Math.min(total / (budget || 1), 1))} 
+                   className="text-primary"
+                   strokeLinecap="round"
+                 />
+               </svg>
+               <div className="absolute inset-0 flex flex-col items-center justify-center">
+                 <DollarSign size={32} className="text-primary mb-1" />
+                 <span className="text-sm font-black text-muted-foreground uppercase tracking-widest">Pulse</span>
+               </div>
+            </div>
+            <div className="space-y-6">
+              {[
+                { label: "Total Budget", val: budget, color: "text-muted-foreground" },
+                { label: "Total Spent", val: total, color: "text-foreground" },
+                { label: "Remaining", val: remaining, color: remaining < 0 ? "text-destructive" : "text-green-500" }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between font-black text-sm uppercase tracking-widest">
+                  <span className="text-muted-foreground">{item.label}</span>
+                  <span className={item.color}>$ {item.val}</span>
+                </div>
+              ))}
+            </div>
+            <Button variant="default" className="w-full h-16 rounded-full font-black text-xl shadow-2xl bg-primary text-primary-foreground">
+              View Full Budget
+            </Button>
+          </Card>
+
+          <Card className="rounded-[3rem] border-4 border-primary/10 bg-primary text-primary-foreground p-10 space-y-6 shadow-2xl relative overflow-hidden">
+             <div className="absolute -bottom-10 -left-10 opacity-20">
+               <Receipt size={150} />
+             </div>
+             <h3 className="text-2xl font-black tracking-tight">Quick Tip</h3>
+             <p className="font-bold opacity-90 leading-relaxed text-lg">
+               You are currently 10% over your allocated budget for this trip. Consider reviewing your upcoming activity costs.
+             </p>
+             <Button variant="outline" className="w-full h-14 rounded-full font-black border-2 border-white/20 bg-white/10 text-white hover:bg-white/20 transition-all text-lg">
+                View Advice
+             </Button>
           </Card>
         </div>
       </div>

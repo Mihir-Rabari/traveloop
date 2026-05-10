@@ -14,6 +14,7 @@ const router = Router();
 router.use(authenticate);
 
 // Stops
+router.get("/:tripId", itineraryController.getStops);
 router.post("/stops", validate(createStopSchema), itineraryController.addStop);
 router.patch("/stops/:id", validate(updateStopSchema), itineraryController.updateStop);
 router.delete("/stops/:id", itineraryController.deleteStop);

@@ -15,14 +15,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2, ArrowLeft } from "lucide-react";
-// import Link from "next/link";
+import { useAuth } from "@/api/hooks/use-auth";
+import { toast } from "sonner";
 
 const forgotSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { forgotPassword, isForgotPasswordLoading } = useAuth();
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<z.infer<typeof forgotSchema>>({
@@ -33,15 +34,12 @@ export default function ForgotPasswordPage() {
   });
 
   async function onSubmit(values: z.infer<typeof forgotSchema>) {
-    setIsLoading(true);
     try {
-      console.log("Forgot password data:", values);
-      // Handle password reset request
+      await forgotPassword(values.email);
       setIsSubmitted(true);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+      toast.success("Reset link sent! Please check your inbox.");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
   }
 
@@ -49,16 +47,16 @@ export default function ForgotPasswordPage() {
     return (
       <div className="space-y-6 text-center">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-black tracking-tight">Check your email</h1>
+          <p className="text-sm font-medium text-muted-foreground">
             We've sent a password reset link to {form.getValues("email")}.
           </p>
         </div>
-        <Button variant="outline" className="w-full" onClick={() => setIsSubmitted(false)}>
+        <Button variant="outline" className="w-full rounded-full h-12 font-bold" onClick={() => setIsSubmitted(false)}>
           Try another email
         </Button>
         <div className="mt-4">
-          <a href="/login" className="text-sm font-medium text-primary hover:underline flex items-center justify-center gap-2">
+          <a href="/login" className="text-sm font-bold text-primary hover:underline flex items-center justify-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to login
           </a>
@@ -70,8 +68,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Forgot password?</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-3xl font-black tracking-tight">Forgot password?</h1>
+        <p className="text-sm font-medium text-muted-foreground">
           Enter your email address and we'll send you a link to reset your password.
         </p>
       </div>
@@ -83,23 +81,26 @@ export default function ForgotPasswordPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Email Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="name@example.com" {...field} />
+                  <Input 
+                    placeholder="name@example.com" 
+                    className="h-12 rounded-full px-6 border-2 border-primary/10 bg-background/50 focus:border-primary transition-all font-medium"
+                    {...field} 
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="ml-4" />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Send reset link
+          <Button type="submit" className="w-full h-14 rounded-full text-lg font-black shadow-xl hover:shadow-primary/20 transition-all" disabled={isForgotPasswordLoading}>
+            {isForgotPasswordLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Send reset link"}
           </Button>
         </form>
       </Form>
 
       <div className="text-center">
-        <a href="/login" className="text-sm font-medium text-primary hover:underline flex items-center justify-center gap-2">
+        <a href="/login" className="text-sm font-bold text-primary hover:underline flex items-center justify-center gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back to login
         </a>
@@ -107,3 +108,4 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+

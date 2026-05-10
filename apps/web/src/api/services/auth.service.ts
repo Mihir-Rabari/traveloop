@@ -23,4 +23,17 @@ export const authService = {
   verifyEmail: async (data: unknown) => {
     return request.post<ApiResponse>(ENDPOINTS.AUTH.VERIFY_EMAIL, data);
   },
+  
+  getMe: async () => {
+    return request.get<ApiResponse>(ENDPOINTS.USERS.ME);
+  },
+
+  forgotPassword: async (email: string) => {
+    return request.post<ApiResponse>(ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+  },
+
+  resetPassword: async (data: any) => {
+    return request.post<ApiResponse>(ENDPOINTS.AUTH.RESET_PASSWORD, data);
+  },
 };
+

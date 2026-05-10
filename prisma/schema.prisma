@@ -25,9 +25,15 @@ model User {
   email                 String                   @unique
   password              String
   name                  String?
+  phoneNumber           String?
+  city                  String?
+  country               String?
+  bio                   String?
+  avatar                String?
   role                  UserRole                 @default(USER)
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @updatedAt
+
   trips                 Trip[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens   PasswordResetToken[]
@@ -97,6 +103,9 @@ model TripStop {
   id          String    @id @default(cuid())
   tripId      String
   trip        Trip      @relation(fields: [tripId], references: id, onDelete: Cascade)
+  title       String    @default("New Activity")
+  description String?
+  type        String    @default("ACTIVITY")
   location    String
   order       Int
   date        DateTime?
@@ -182,4 +191,32 @@ model SharedTrip {
   token     String   @unique
   expiresAt DateTime?
   createdAt DateTime @default(now())
+}
+
+model City {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  country     String
+  image       String?
+  description String?
+  lat         Float?
+  lng         Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  activities  ActivityTemplate[]
+}
+
+model ActivityTemplate {
+  id          String   @id @default(cuid())
+  cityId      String
+  city        City     @relation(fields: [cityId], references: id, onDelete: Cascade)
+  title       String
+  description String?
+  image       String?
+  category    String?
+  cost        Float?
+  rating      Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

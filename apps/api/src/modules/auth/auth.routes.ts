@@ -20,4 +20,8 @@ router.post("/logout", authController.logout);
 router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
 router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
 
+// Protected routes
+import { authenticate } from "../../middlewares/auth.middleware";
+router.get("/me", authenticate, authController.getMe);
+
 export default router;

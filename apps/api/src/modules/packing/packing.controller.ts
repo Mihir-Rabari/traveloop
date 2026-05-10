@@ -43,6 +43,13 @@ export class PackingController {
     await packingService.deleteItem(id, userId);
     return sendResponse(res, 200, "Item deleted successfully");
   });
-}
+
+  toggleItem = asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const userId = req.user!.userId;
+    const item = await packingService.toggleItem(id, userId);
+    return sendResponse(res, 200, "Item toggled successfully", item);
+  });
+};
 
 export const packingController = new PackingController();

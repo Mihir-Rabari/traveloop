@@ -4,6 +4,16 @@ import { prisma } from "../../lib/prisma";
 
 export class ItineraryService {
   // Stops
+  async getStops(tripId: string, userId: string) {
+    const trip = await prisma.trip.findUnique({ 
+      where: { id: tripId },
+      include: { stops: { include: { activities: true }, orderBy: { order: "asc" } } }
+    });
+    if (!trip) throw new NotFoundError("Trip not found");
+    if (trip.userId !== userId) throw new ForbiddenError();
+    return trip.stops;
+  }
+
   async addStop(userId: string, data: any) {
     const trip = await prisma.trip.findUnique({ where: { id: data.tripId } });
     if (!trip) throw new NotFoundError("Trip not found");

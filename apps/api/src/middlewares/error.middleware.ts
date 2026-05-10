@@ -8,7 +8,9 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+  console.error("[API Error]:", err);
   if (err instanceof AppError) {
+
     return sendError(res, err.statusCode, err.message);
   }
 

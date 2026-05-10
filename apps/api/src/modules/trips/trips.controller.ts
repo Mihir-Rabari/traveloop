@@ -41,6 +41,14 @@ export class TripsController {
     const trips = await tripsService.getPublicTrips();
     return sendResponse(res, 200, "Public trips retrieved successfully", trips);
   });
+
+  shareTrip = asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const userId = req.user!.userId;
+    const { email } = req.body;
+    await tripsService.shareTrip(id, userId, email);
+    return sendResponse(res, 200, "Trip shared successfully");
+  });
 }
 
 export const tripsController = new TripsController();

@@ -72,6 +72,12 @@ export class AuthController {
     await authService.resetPassword(token, password);
     return sendResponse(res, 200, "Password reset successfully");
   });
+
+  getMe = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const user = await authService.getUserById(userId);
+    return sendResponse(res, 200, "User profile retrieved successfully", user);
+  });
 }
 
 export const authController = new AuthController();

@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: "Traveloop is a modern travel planning platform designed for seamless trip organization.",
 };
 
+import { QueryProvider } from "@/providers/query-provider";
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,7 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <QueryProvider>
+          {children}
+          <Toaster position="top-center" richColors />
+        </QueryProvider>
+      </body>
     </html>
   );
 }

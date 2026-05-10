@@ -1,82 +1,203 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  MessageSquare, Plus, Save, Trash2, Calendar, 
+  StickyNote, Bookmark, Edit3, MoreVertical, Search
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, Plus, Trash2, Pin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useParams } from "next/navigation";
+import { useNotes } from "@/api/hooks/use-notes";
+import { toast } from "sonner";
 
-export default function TripNotesPage() {
-  const [activeFilter, setActiveFilter] = useState<"All" | "by Day" | "by stop">("All");
+export default function NotesPage() {
+  const { id: tripId } = useParams() as { id: string };
+  const { useNotesQuery, useCreateNoteMutation, useUpdateNoteMutation } = useNotes(tripId);
+  
+  const { data: notesResponse, isLoading } = useNotesQuery();
+  const createNoteMutation = useCreateNoteMutation();
+  const updateNoteMutation = useUpdateNoteMutation();
+
+  const [isAdding, setIsAdding] = useState(false);
+  const [newNote, setNewNote] = useState({ title: "", content: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const notes = (notesResponse as any)?.data || [];
+
+  const handleSave = () => {
+    if (!newNote.title.trim()) return;
+
+    if (editingId) {
+      updateNoteMutation.mutate({ id: editingId, data: newNote }, {
+        onSuccess: () => {
+          setEditingId(null);
+          setNewNote({ title: "", content: "" });
+          toast.success("Note updated!");
+        }
+      });
+    } else {
+      createNoteMutation.mutate(newNote, {
+        onSuccess: () => {
+          setIsAdding(false);
+          setNewNote({ title: "", content: "" });
+          toast.success("Note saved!");
+        }
+      });
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      <div className="flex items-center justify-between border-b pb-4">
-        <div>
-          <a href="/trips" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2 transition-colors">
-            <ArrowLeft className="mr-1 h-3 w-3" />
-            back to My Trips
-          </a>
-          <h1 className="text-2xl font-bold tracking-tight">Trip notes</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search notes..." className="pl-9 h-9 w-48" />
+    <div className="max-w-6xl mx-auto space-y-12 pb-20 px-4">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 text-pink-500">
+            <div className="p-3 bg-pink-500/10 rounded-2xl">
+              <MessageSquare className="h-8 w-8" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.3em]">Journal & Records</span>
           </div>
-          <Button variant="outline" size="sm" className="h-9">Group by</Button>
-          <Button variant="outline" size="sm" className="h-9">Filter</Button>
-          <Button variant="outline" size="sm" className="h-9">Sort by...</Button>
+          <h1 className="text-6xl font-black tracking-tighter text-foreground">Trip Notes</h1>
+          <p className="text-xl text-muted-foreground font-medium">
+            Capture every moment, memory, and important detail of your journey.
+          </p>
         </div>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex flex-col gap-3">
-          <select className="flex h-10 w-full md:w-64 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-            <option>Trip: Paris, & Rome Adventure</option>
-          </select>
-          <div className="flex items-center gap-2">
-            {(["All", "by Day", "by stop"] as const).map((filter) => (
-              <Button
-                key={filter}
-                variant={activeFilter === filter ? "default" : "outline"}
-                size="sm"
-                onClick={() => setActiveFilter(filter)}
-                className="h-8 rounded-full"
-              >
-                {filter}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <Button size="sm">
-          <Plus className="mr-2 h-4 w-4" />
-          Add note
+        <Button 
+          onClick={() => setIsAdding(true)}
+          className="rounded-full h-16 px-10 font-black text-lg shadow-2xl shadow-primary/20 flex items-center gap-2"
+        >
+          <Plus size={24} />
+          New Entry
         </Button>
       </div>
 
-      <div className="space-y-4">
-        {/* Mock Notes from Screen 13 */}
-        {[
-          { title: "Hotel check-in details - Rome stop", desc: "check in after 2pm, room 302, breakfast included (7-10am)\nDay 2: June 14 2025" },
-          { title: "Restaurant Recommendations", desc: "Trattoria Da Enzo al 29 - great pasta. Need to book in advance.\nDay 3: June 15 2025" },
-          { title: "Train to Florence info", desc: "Train departs at 08:30 AM from Roma Termini. Platform 4.\nDay 5: June 17 2025" }
-        ].map((note, i) => (
-          <Card key={i} className="relative group overflow-hidden border-muted-foreground/20 hover:border-primary/50 transition-colors cursor-pointer">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
-            <CardContent className="p-4 pl-5">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold text-lg">{note.title}</h3>
-                <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground"><Pin className="h-3.5 w-3.5" /></Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Note Editor Overlay/Section */}
+        <AnimatePresence>
+          {(isAdding || editingId) && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="lg:col-span-1"
+            >
+              <Card className="rounded-[3rem] border-4 border-primary/5 bg-white/80 backdrop-blur-xl shadow-2xl p-10 space-y-8 sticky top-32">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-black">{editingId ? "Edit Note" : "Quick Note"}</h3>
+                  <Button variant="ghost" size="icon" onClick={() => { setIsAdding(false); setEditingId(null); }} className="rounded-full">
+                    <Trash2 size={20} className="text-muted-foreground" />
+                  </Button>
                 </div>
+                
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Heading</label>
+                    <input 
+                      value={newNote.title}
+                      onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+                      placeholder="Give it a title..."
+                      className="w-full bg-transparent border-b-4 border-primary/10 focus:border-primary outline-none py-2 text-xl font-black transition-all"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Content</label>
+                    <textarea 
+                      value={newNote.content}
+                      onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+                      placeholder="Write your thoughts here..."
+                      rows={8}
+                      className="w-full bg-primary/5 rounded-[2rem] p-6 outline-none focus:bg-primary/10 transition-all font-medium text-lg resize-none"
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={handleSave}
+                  className="w-full h-16 rounded-[2rem] font-black text-lg shadow-xl"
+                  disabled={!newNote.title.trim() || !newNote.content.trim()}
+                >
+                  <Save className="mr-2 h-6 w-6" />
+                  Save Note
+                </Button>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Notes Grid */}
+        <div className={cn(
+          "grid gap-8",
+          (isAdding || editingId) ? "lg:col-span-2 grid-cols-1" : "lg:col-span-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        )}>
+          {notes.map((note: any) => (
+            <motion.div
+              key={note.id}
+              layout
+              whileHover={{ y: -10 }}
+              className="group cursor-pointer"
+              onClick={() => {
+                setEditingId(note.id);
+                setNewNote({ title: note.title, content: note.content });
+              }}
+            >
+              <Card className="h-full rounded-[3rem] border-4 border-primary/5 bg-white/40 backdrop-blur-md shadow-xl hover:shadow-2xl hover:border-primary/20 transition-all p-10 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 bg-primary/5 rounded-2xl text-primary">
+                      <StickyNote size={24} />
+                    </div>
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                      {new Date(note.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                    {note.title}
+                  </h3>
+                  <p className="text-muted-foreground font-medium line-clamp-4 leading-relaxed">
+                    {note.content}
+                  </p>
+                </div>
+                
+                <div className="pt-8 flex items-center justify-between border-t border-primary/5 mt-8">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Saved</span>
+                  </div>
+                  <Button variant="ghost" size="icon" className="rounded-full opacity-0 group-hover:opacity-100 transition-all">
+                    <Edit3 size={18} />
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+
+          {notes.length === 0 && !isAdding && (
+            <div className="lg:col-span-3 text-center py-32 bg-white/40 backdrop-blur-md rounded-[4rem] border-4 border-dashed border-primary/10">
+              <div className="h-24 w-24 rounded-full bg-primary/5 flex items-center justify-center mx-auto mb-8 text-primary/40">
+                <Bookmark size={48} />
               </div>
-              <p className="text-sm text-muted-foreground whitespace-pre-line">{note.desc}</p>
-            </CardContent>
-          </Card>
-        ))}
+              <h3 className="text-3xl font-black text-foreground">Your travel diary is empty</h3>
+              <p className="text-xl text-muted-foreground font-medium mt-4 max-w-md mx-auto">
+                Start recording your journey. Every memory is worth saving.
+              </p>
+              <Button 
+                onClick={() => setIsAdding(true)}
+                variant="outline" 
+                className="mt-10 rounded-full h-14 px-10 font-black border-2 border-primary/20"
+              >
+                Create First Entry
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
+}
+
+function cn(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
 }

@@ -22,4 +22,8 @@ export const tripsService = {
   deleteTrip: async (id: string) => {
     return request.delete<ApiResponse>(ENDPOINTS.TRIPS.DETAILS(id));
   },
+  
+  shareTrip: async (id: string, email: string) => {
+    return request.post<ApiResponse>(`${ENDPOINTS.TRIPS.BASE}/${id}/share`, { email });
+  },
 };

@@ -19,5 +19,6 @@ router.delete("/:id", packingController.deleteChecklist);
 router.post("/items", validate(addItemSchema), packingController.addItem);
 router.patch("/items/:id", validate(updateItemSchema), packingController.updateItem);
 router.delete("/items/:id", packingController.deleteItem);
+router.post("/items/:id/toggle", packingController.toggleItem);
 
 export default router;

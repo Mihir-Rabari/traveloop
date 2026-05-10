@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "start": "turbo start",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -17,6 +18,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.4.3",
     "prettier": "^3.5.2",
+    "prisma": "6.19.3",
     "turbo": "^2.4.2"
   },
   "packageManager": "pnpm@10.33.2",
@@ -30,5 +32,8 @@
       "sharp",
       "unrs-resolver"
     ]
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3"
   }
 }

@@ -6,6 +6,7 @@ import VerifyEmailTemplate from "../templates/auth/verify-email";
 import ResetPasswordTemplate from "../templates/auth/reset-password";
 import WelcomeTemplate from "../templates/auth/welcome";
 import LoginAlertTemplate from "../templates/auth/login-alert";
+import ShareTripTemplate from "../templates/trips/share-trip";
 import * as React from "react";
 
 export class MailService {
@@ -64,6 +65,15 @@ export class MailService {
     await this.send({
       to,
       subject: "New login to your Traveloop account",
+      html,
+    });
+  }
+
+  async sendTripInvitationEmail(to: string, senderName: string, tripTitle: string, shareLink: string) {
+    const html = await render(React.createElement(ShareTripTemplate, { senderName, tripTitle, shareLink }));
+    await this.send({
+      to,
+      subject: `${senderName} shared a trip with you: ${tripTitle}`,
       html,
     });
   }

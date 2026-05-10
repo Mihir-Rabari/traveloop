@@ -13,6 +13,12 @@ export class CitiesController {
     const cities = await citiesRepository.search(q as string);
     return sendResponse(res, 200, "Cities retrieved successfully", cities);
   });
+
+  getActivities = asyncHandler(async (req: Request, res: Response) => {
+    const { city } = req.query;
+    const activities = await citiesRepository.getActivities(city as string);
+    return sendResponse(res, 200, "Activities retrieved", activities);
+  });
 }
 
 export const citiesController = new CitiesController();

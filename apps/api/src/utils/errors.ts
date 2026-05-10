@@ -19,10 +19,7 @@ export class BadRequestError extends AppError {
 
 export class UnauthorizedError extends AppError {
   constructor(message: string = "Unauthorized") {
-    super(message, 419); // Standardized 419 for auth issues in this project? User mentioned 419 in metadata? No, wait.
-    // Usually 401. Let's stick to 401 unless specified.
-    // Actually, looking at the user's metadata: "The user has 1 active workspaces... apps/api/src/modules/auth/auth.routes.ts... 419 is often used for CSRF or session expiration. 
-    // I'll use 401.
+    super(message, 401);
   }
 }
 

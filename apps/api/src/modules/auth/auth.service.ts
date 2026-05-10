@@ -13,24 +13,33 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "your-super-secret-
 
 export class AuthService {
   async register(data: any) {
-    const existingUser = await authRepository.findUserByEmail(data.email);
+    console.log("Registering user with data:", data);
+    const { email, password, firstName, lastName, phoneNumber, city, country, additionalInfo } = data;
+
+    
+    const existingUser = await authRepository.findUserByEmail(email);
     if (existingUser) {
       throw new ConflictError("Email already registered");
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const { otp, hashedOtp, expiresAt } = otpService.generate();
 
     const result = await prisma.$transaction(async (tx: any) => {
       const newUser = await tx.user.create({
         data: {
-          ...data,
+          email,
           password: hashedPassword,
+          name: `${firstName} ${lastName}`.trim(),
+          phoneNumber,
+          city,
+          country,
+          bio: additionalInfo,
         },
       });
 
       await tx.emailVerificationToken.upsert({
-        where: { token: hashedOtp }, // Token is unique, so we can use it as key, but usually we want to upsert by userId
+        where: { token: hashedOtp },
         update: { token: hashedOtp, expiresAt, verifiedAt: null },
         create: { userId: newUser.id, token: hashedOtp, expiresAt },
       });
@@ -42,6 +51,7 @@ export class AuthService {
 
     return { userId: result.id, email: result.email };
   }
+
 
   async resendOtp(email: string) {
     const user = await authRepository.findUserByEmail(email);
@@ -138,6 +148,27 @@ export class AuthService {
     await authRepository.updatePassword(storedToken.userId, hashedPassword);
     await prisma.passwordResetToken.delete({ where: { id: storedToken.id } }); // Direct prisma use for simplicity or add to repo
   }
+
+  async getUserById(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phoneNumber: true,
+        city: true,
+        country: true,
+        role: true,
+        bio: true,
+        avatar: true,
+        createdAt: true,
+      },
+    });
+    if (!user) throw new AppError("User not found", 404);
+    return user;
+  }
+
 
   private generateAccessToken(user: any) {
     return jwt.sign(

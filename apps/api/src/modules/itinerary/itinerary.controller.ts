@@ -5,6 +5,13 @@ import { asyncHandler } from "../../utils/async-handler";
 
 export class ItineraryController {
   // Stops
+  getStops = asyncHandler(async (req: Request, res: Response) => {
+    const tripId = req.params.tripId as string;
+    const userId = req.user!.userId;
+    const stops = await itineraryService.getStops(tripId, userId);
+    return sendResponse(res, 200, "Stops retrieved successfully", stops);
+  });
+
   addStop = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.userId;
     const stop = await itineraryService.addStop(userId, req.body);

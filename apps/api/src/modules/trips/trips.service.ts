@@ -1,5 +1,7 @@
 import { tripsRepository } from "./trips.repository";
 import { ForbiddenError, NotFoundError } from "../../utils/errors";
+import { mailService } from "../mail/services/mail.service";
+import { prisma } from "../../lib/prisma";
 
 export class TripsService {
   async getAllUserTrips(userId: string) {
@@ -47,6 +49,20 @@ export class TripsService {
 
   async getPublicTrips() {
     return tripsRepository.findPublicTrips();
+  }
+
+  async shareTrip(tripId: string, userId: string, targetEmail: string) {
+    const trip = await tripsRepository.findById(tripId);
+    if (!trip) throw new NotFoundError("Trip not found");
+    if (trip.userId !== userId) throw new ForbiddenError("You cannot share this trip");
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const senderName = user?.name || "A friend";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const shareLink = `${appUrl}/share/${tripId}`;
+
+    await mailService.sendTripInvitationEmail(targetEmail, senderName, trip.title, shareLink);
+    return { success: true };
   }
 }
 

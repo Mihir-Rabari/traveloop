@@ -50,6 +50,14 @@ export class PackingService {
 
     return packingRepository.deleteItem(itemId);
   }
+
+  async toggleItem(itemId: string, userId: string) {
+    const item = await packingRepository.findItemById(itemId);
+    if (!item) throw new NotFoundError("Item not found");
+    if (item.checklist.trip.userId !== userId) throw new ForbiddenError();
+
+    return packingRepository.updateItem(itemId, { isCompleted: !item.isCompleted });
+  }
 }
 
 export const packingService = new PackingService();

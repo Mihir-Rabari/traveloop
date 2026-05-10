@@ -14,8 +14,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-// import Link from "next/link";
+import { Eye, EyeOff, Loader2, MapPin, ArrowRight } from "lucide-react";
+import { useAuth } from "@/api/hooks/use-auth";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -24,8 +25,7 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  // const login = useAuthStore((state) => state.login);
+  const { login, isLoginLoading } = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -36,39 +36,54 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setIsLoading(true);
     try {
-      // await login(values);
-      console.log("Login data:", values);
-      // Handle success redirect
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+      await login(values);
+      toast.success("Welcome back! Loading your dashboard...");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Login failed. Please check your credentials.");
     }
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your credentials to sign in to your account
-        </p>
+    <div className="space-y-10">
+      {/* Photo Placeholder - Screen 1 */}
+      <div className="flex flex-col items-center gap-6">
+        <div className="relative group">
+          <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all" />
+          <div className="relative w-32 h-32 rounded-full border-4 border-background overflow-hidden shadow-2xl bg-muted">
+            <img 
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=400&auto=format&fit=crop" 
+              alt="User Avatar" 
+              className="w-full h-full object-cover"
+            />
+
+          </div>
+          <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-secondary rounded-full border-4 border-card flex items-center justify-center shadow-lg">
+            <MapPin className="text-white h-4 w-4" />
+          </div>
+        </div>
+        <div className="text-center">
+          <h1 className="text-3xl font-black text-foreground tracking-tight">Welcome Back</h1>
+          <p className="text-muted-foreground font-medium mt-1">Sign in to your travel world</p>
+        </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-sm font-bold uppercase tracking-widest text-muted-foreground ml-4">Username / Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="name@example.com" {...field} />
+                  <Input 
+                    placeholder="traveler@world.com" 
+                    className="h-14 rounded-full px-8 border-2 border-primary/10 bg-background/50 focus:border-primary transition-all text-lg font-medium"
+                    {...field} 
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="ml-4" />
               </FormItem>
             )}
           />
@@ -77,54 +92,50 @@ export default function LoginPage() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel>Password</FormLabel>
-                  <a href="#" className="text-sm text-primary hover:underline">
-                    Forgot password?
-                  </a>
+                <div className="flex items-center justify-between ml-4">
+                  <FormLabel className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Password</FormLabel>
                 </div>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
+                      className="h-14 rounded-full px-8 border-2 border-primary/10 bg-background/50 focus:border-primary transition-all text-lg font-medium"
                       {...field}
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 hover:bg-transparent text-muted-foreground hover:text-primary"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                      <span className="sr-only">
-                        {showPassword ? "Hide password" : "Show password"}
-                      </span>
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </Button>
                   </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="ml-4" />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign In
+          <Button 
+            type="submit" 
+            className="w-full h-16 rounded-full text-xl font-black shadow-xl hover:shadow-primary/20 transition-all group" 
+            disabled={isLoginLoading}
+          >
+            {isLoginLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : "Login Now"}
+            <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
           </Button>
         </form>
       </Form>
 
-      <div className="text-center text-sm">
+      <div className="text-center font-bold text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <a href="/register" className="font-semibold text-primary hover:underline">
-          Sign up
+        <a href="/register" className="text-primary hover:underline underline-offset-4 decoration-primary/30">
+          Join the community
         </a>
       </div>
     </div>
   );
 }
+
