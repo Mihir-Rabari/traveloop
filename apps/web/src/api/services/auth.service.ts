@@ -1,14 +1,15 @@
 import { request } from "../client/request";
 import { ENDPOINTS } from "../constants/endpoints";
 import { ApiResponse } from "../types/api-response.types";
+import { AuthResponse } from "../types/auth.types";
 
 export const authService = {
-  login: async (data: any) => {
-    return request.post<ApiResponse>(ENDPOINTS.AUTH.LOGIN, data);
+  login: async (data: unknown) => {
+    return request.post<ApiResponse<AuthResponse>>(ENDPOINTS.AUTH.LOGIN, data);
   },
   
-  register: async (data: any) => {
-    return request.post<ApiResponse>(ENDPOINTS.AUTH.REGISTER, data);
+  register: async (data: unknown) => {
+    return request.post<ApiResponse<AuthResponse>>(ENDPOINTS.AUTH.REGISTER, data);
   },
   
   logout: async () => {
@@ -19,7 +20,7 @@ export const authService = {
     return request.post<ApiResponse>(ENDPOINTS.AUTH.REFRESH);
   },
   
-  verifyEmail: async (data: any) => {
+  verifyEmail: async (data: unknown) => {
     return request.post<ApiResponse>(ENDPOINTS.AUTH.VERIFY_EMAIL, data);
   },
 };

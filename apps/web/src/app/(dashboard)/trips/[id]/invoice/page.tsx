@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, Filter, Hash, Download, FileText, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Search, Download, FileText, CheckCircle2 } from "lucide-react";
 
 export default function ExpenseInvoicePage() {
   return (

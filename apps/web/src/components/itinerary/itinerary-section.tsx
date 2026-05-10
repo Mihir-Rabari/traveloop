@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GripVertical, ChevronDown, ChevronUp, MapPin, Calendar, DollarSign, Plus, Trash2 } from "lucide-react";
+import { GripVertical, ChevronDown, ChevronUp, Calendar, DollarSign, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Section {

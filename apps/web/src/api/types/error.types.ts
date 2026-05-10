@@ -12,6 +12,6 @@ export class ApiError extends Error {
   }
 }
 
-export const isApiError = (error: any): error is ApiError => {
+export const isApiError = (error: unknown): error is ApiError => {
   return error instanceof ApiError;
 };

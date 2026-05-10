@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, Filter, ArrowDownAZ, Plus, Trash2, Pin } from "lucide-react";
+import { ArrowLeft, Search, Plus, Trash2, Pin } from "lucide-react";
 
 export default function TripNotesPage() {
   const [activeFilter, setActiveFilter] = useState<"All" | "by Day" | "by stop">("All");

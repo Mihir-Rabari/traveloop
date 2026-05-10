@@ -39,7 +39,7 @@
     "@types/nodemailer": "^8.0.0",
     "@types/react": "^19.2.14",
     "nodemon": "^3.1.9",
-    "prisma": "^6.4.1",
+    "prisma": "6.19.3",
     "react": "^19.2.6",
     "react-email": "^6.1.1",
     "supertest": "^7.2.2",

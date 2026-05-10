@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, MapPin, Edit3 } from "lucide-react";
+import { Mail, Phone, MapPin, Edit3 } from "lucide-react";
 import { TripCard } from "@/components/cards/trip-card";
 
 export default function ProfilePage() {

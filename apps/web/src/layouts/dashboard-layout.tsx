@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Plane, LayoutDashboard, MapPin, Search, User, Settings, LogOut, Wallet } from "lucide-react";
+import { Menu, X, Plane, LayoutDashboard, Search, User, Settings, LogOut, Wallet } from "lucide-react";
 // import Link from "next/link"; // We will add Links later when routes are setup
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {

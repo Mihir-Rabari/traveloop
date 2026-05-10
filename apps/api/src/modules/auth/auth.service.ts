@@ -38,9 +38,9 @@ export class AuthService {
       return newUser;
     });
 
-    await mailService.sendVerificationEmail(user.email, otp);
+    await mailService.sendVerificationEmail(result.email, otp);
 
-    return { userId: user.id, email: user.email };
+    return { userId: result.id, email: result.email };
   }
 
   async resendOtp(email: string) {

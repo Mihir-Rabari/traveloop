@@ -6,15 +6,11 @@ export const useAuth = () => {
   const { user, isAuthenticated, setAuth, clearAuth } = useAuthStore();
   const router = useRouter();
 
-  const login = async (credentials: any) => {
-    try {
-      const response = await authService.login(credentials);
-      setAuth(response.data.user);
-      router.push("/dashboard");
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  const login = async (credentials: unknown) => {
+    const response = await authService.login(credentials);
+    setAuth(response.data.user);
+    router.push("/dashboard");
+    return response;
   };
 
   const logout = async () => {
